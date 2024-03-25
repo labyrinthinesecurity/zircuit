@@ -1,0 +1,125 @@
+[
+  {
+    "scope": "RG0",
+    "timeseries": [
+      {
+        "id": 0,
+        "op": "C",
+        "equality": {
+          "LHS": "a",
+          "RHS": "a"
+        },
+        "classes": [
+          [
+            "a"
+          ]
+        ]
+      },
+      {
+        "id": 1,
+        "op": "G",
+        "equality": {
+          "LHS": "a",
+          "RHS": "g"
+        },
+        "classes": [
+          [
+            "a","g"
+          ]
+        ]
+      },
+      {
+        "id": 2,
+        "op": "C",
+        "equality": {
+          "LHS": "f",
+          "RHS": "f"
+        },
+        "classes": [
+          [
+            "f"
+          ],
+          [
+            "a","g"
+          ]
+        ]
+      },
+      {
+        "id": 3,
+        "op": "G",
+        "equality": {
+          "LHS": "f",
+          "RHS": "e"
+        },
+        "classes": [
+          [
+            "a","g"
+          ],
+          [
+            "f","e"
+          ]
+        ]
+      },
+      {
+        "id": 4,
+        "op": "C",
+        "equality": {
+          "LHS": "c",
+          "RHS": "c"
+        },
+        "classes": [
+          [
+            "f","e"
+          ],
+          [
+            "a","g"
+          ],
+          [ "c" ]
+        ]
+      },
+      {
+        "id": 5,
+        "op": "G",
+        "equality": {
+          "LHS": "c",
+          "RHS": "b"
+        },
+        "classes": [
+          [
+            "a","g"
+          ],
+          [ "c","b"]
+          ,
+          [
+            "f","e"
+          ]
+        ]
+      },
+      {
+        "id": 6,
+        "op": "M",
+        "equality": {
+          "LHS": "c",
+          "RHS": "f"
+        },
+        "classes": [
+          [
+            "a","g"
+          ],
+          [ "c","b","f","e"]
+        ]
+      },
+      {
+        "id": 7,
+        "op": "M",
+        "equality": {
+          "LHS": "g",
+          "RHS": "b"
+        },
+        "classes": [
+          [ "a","g","c","b","f","e"]
+        ]
+      }
+    ]
+  }
+]
