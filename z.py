@@ -11,10 +11,26 @@ timeline=None
 terms_store=None
 reverse_store=None
 
+parser = argparse.ArgumentParser()
+parser.add_argument("--filename", type=str, required=False, default='test', nargs='?', help="name of the JSON source file, in FEATHER format (defaut name: test.json)")
+parser.add_argument("--debug", type=bool, nargs='?', default=False, help="toggles debug mode (default: False")
+parser.add_argument("--canonical", nargs='?', default=False, type=bool, help="generates partition in canonical form (default: False)")
+parser.add_argument("--scope", type=str, required=True, nargs='?', help="scope of the equivalence to be proved")
+parser.add_argument("--origin", type=str, required=True, nargs='?', help="origin of the equivalence to be proved")
+parser.add_argument("--termination", type=str, required=True, nargs='?', help="termination of the equivalence to be proved")
+args = parser.parse_args()
+
+debug=args.debug
+canonical=args.canonical
+filename=args.filename
+scope=args.scope
+source=args.origin
+destination=args.termination
+
 def load_file(filename):
   global timeline
   try:
-    with open(f"{filename}.json", 'r') as f:
+    with open(f"{filename}", 'r') as f:
       timeline = json.load(f)
   except:
     print("cannot load input file.")
@@ -205,10 +221,10 @@ def find_circuit(source, destination, scope):
   else:
     return
 
-load_file("test")
-source='a'
-destination='b'
-scope='RG0'
+load_file(filename)
+#source='a'
+#destination='b'
+#scope='RG0'
 
 find_circuit(source,destination,scope)
 if canonical:
