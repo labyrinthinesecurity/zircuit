@@ -1,0 +1,166 @@
+[
+  {
+    "scope": "RG0",
+    "timeseries": [
+      {
+        "id": 0,
+        "op": "C",
+        "equality": {
+          "LHS": "a",
+          "RHS": "a"
+        },
+        "classes": [
+          [
+            "a"
+          ]
+        ]
+      },
+      {
+        "id": 1,
+        "op": "G",
+        "equality": {
+          "LHS": "a",
+          "RHS": "b"
+        },
+        "classes": [
+          [
+            "a","b"
+          ]
+        ]
+      },
+      {
+        "id": 2,
+        "op": "C",
+        "equality": {
+          "LHS": "c",
+          "RHS": "c"
+        },
+        "classes": [
+          [
+            "c"
+          ],
+          [
+            "a","b"
+          ]
+        ]
+      },
+      {
+        "id": 3,
+        "op": "C",
+        "equality": {
+          "LHS": "d",
+          "RHS": "d"
+        },
+        "classes": [
+          [
+            "a","b"
+          ],
+          [
+            "c"
+          ],
+          [
+            "d"
+          ]
+        ]
+      },
+      {
+        "id": 4,
+        "op": "G",
+        "equality": {
+          "LHS": "d",
+          "RHS": "e"
+        },
+        "classes": [
+          [
+            "d","e"
+          ],
+          [
+            "a","b"
+          ],
+          [ "c" ]
+        ]
+      },
+      {
+        "id": 5,
+        "op": "C",
+        "equality": {
+          "LHS": "f",
+          "RHS": "f"
+        },
+        "classes": [
+          [
+            "a","b"
+          ],
+          [ "f"]
+          ,
+          [
+            "d","e"
+          ],
+          [ "c" ]
+        ]
+      },
+      {
+        "id": 6,
+        "op": "G",
+        "equality": {
+          "LHS": "c",
+          "RHS": "f"
+        },
+        "classes": [
+          [
+            "a","b"
+          ],
+          [ "c", "f"]
+          ,
+          [
+            "d","e"
+          ]
+        ]
+      },
+      {
+        "id": 7,
+        "op": "M",
+        "equality": {
+          "LHS": "b",
+          "RHS": "f"
+        },
+        "classes": [
+          [
+            "a","b","c","f"
+          ],
+          [
+            "d","e"
+          ]
+        ]
+      },
+      {
+        "id": 8,
+        "op": "M",
+        "equality": {
+          "LHS": "b",
+          "RHS": "d"
+        },
+        "classes": [
+          [ "g"],
+          [
+            "a","b","c","f","d","e"
+          ]
+        ]
+      },
+      {
+        "id": 9,
+        "op": "G",
+        "equality": {
+          "LHS": "e",
+          "RHS": "h"
+        },
+        "classes": [
+          [ "g"],
+          [
+            "a","b","c","f","d","e","h"
+          ]
+        ]
+      }
+    ]
+  }
+]
