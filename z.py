@@ -1,8 +1,7 @@
 #!/usr/bin/python3
 
-import json,os,sys,hashlib
+import json,os,sys,hashlib,argparse
 
-canonical=False
 circuit={}
 circuitTime={}
 circuitOp={}
@@ -66,6 +65,13 @@ def build_canonical_partition(scope):
       found=True
   if not found:
     return None
+  for aO in origClasses:
+    for aT in aO:
+      if aT not in terms:
+        terms.add(aT)
+  sorted_terms=sorted(list(terms))
+  terms_store = {"TERM"+str(i): sorted_terms[i] for i in range(len(sorted_terms))}
+  reverse_store = {string: "TERM"+str(index) for index, string in enumerate(sorted_terms)}
   for aO in origClasses:
     for aT in aO:
       if aT not in terms:
@@ -211,12 +217,12 @@ def find_circuit(source, destination, scope):
         circuit[RHS]=destination
         circuitTime[RHS]=time
         circuitOp[RHS]='G'
-        find_circuit(source,LHS,scope)
+        find_circuit(source,RHS,scope)
       elif destination==RHS:
         circuit[LHS]=destination
         circuitTime[LHS]=time
         circuitOp[LHS]='G'
-        find_circuit(source,RHS,scope)
+        find_circuit(source,LHS,scope)
       return
   else:
     return
@@ -245,9 +251,10 @@ if source in circuit:
   curr=source
 else:
   print(source,"and",destination,"are not equivalent")
-  print("(source not found)")
+  print("(origin not found in partition)")
   sys.exit(1)
 proof=''
+
 while not done and cnt<100000:
   cnt+=1
   proof+="("+str(circuitTime[curr])+") "+curr+" -["+circuitOp[curr]+"]-> "+circuit[curr]+"\n"
@@ -260,6 +267,8 @@ if not done:
   print(source,"and",destination,"are not equivalent")
   sys.exit(1)
 else:
-  print("proof of equivalence between",source,"and",destination)
+  print("")
+  print("*** Proof Of Equivalence between",source,"and",destination,"***")
+  print("")
   print(proof)
   sys.exit(0)
