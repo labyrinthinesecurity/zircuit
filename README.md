@@ -8,7 +8,7 @@
 ## Run test sample(s)
 
 ### First test (test1.json)
-./z.py --filename test_samples/test1.json --scope RG0 --origin a --termination b
+./z.py --filename test_samples/test1.json --name RG0 --origin a --endpoint b
 
 ```
 *** Proof Of Equivalence between a and b ***
@@ -22,7 +22,7 @@ To prove that a and b are connected by a chain of equalities, zircuit shows that
 - g is connected to b at time (7) by adding g to the equivalence class of b through the MERGE operation (because g is not alone in its class, so its whole class is merged with the class of b into a single new class)
 
 ### Second test (test2.json)
-./z.py --filename test_samples/test2.json --scope RG0 --origin a --termination h
+./z.py --filename test_samples/test2.json --name RG0 --origin a --endpoint h
 
 ```
 *** Proof Of Equivalence between a and h ***

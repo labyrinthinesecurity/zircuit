@@ -14,17 +14,17 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--filename", type=str, required=False, default='test', nargs='?', help="name of the JSON source file, in FEATHER format (defaut name: test.json)")
 parser.add_argument("--debug", type=bool, nargs='?', default=False, help="toggles debug mode (default: False")
 parser.add_argument("--canonical", nargs='?', default=False, type=bool, help="generates partition in canonical form (default: False)")
-parser.add_argument("--scope", type=str, required=True, nargs='?', help="scope of the equivalence to be proved")
+parser.add_argument("--name", type=str, required=True, nargs='?', help="name of the series in the source file")
 parser.add_argument("--origin", type=str, required=True, nargs='?', help="origin of the equivalence to be proved")
-parser.add_argument("--termination", type=str, required=True, nargs='?', help="termination of the equivalence to be proved")
+parser.add_argument("--endpoint", type=str, required=True, nargs='?', help="endpoint of the equivalence to be proved")
 args = parser.parse_args()
 
 debug=args.debug
 canonical=args.canonical
 filename=args.filename
-scope=args.scope
+scope=args.name
 source=args.origin
-destination=args.termination
+destination=args.endpoint
 
 def load_file(filename):
   global timeline
@@ -51,9 +51,9 @@ def build_canonical_partition(scope):
   terms=set()
   canonical_classes=[]
   for aT in timeline:
-    if aT['scope']==scope:
+    if aT['name']==scope:
       found=True
-      timeseries=aT['timeseries']
+      timeseries=aT['history']
       break
   if not found:
     return None
@@ -73,13 +73,6 @@ def build_canonical_partition(scope):
   terms_store = {"TERM"+str(i): sorted_terms[i] for i in range(len(sorted_terms))}
   reverse_store = {string: "TERM"+str(index) for index, string in enumerate(sorted_terms)}
   for aO in origClasses:
-    for aT in aO:
-      if aT not in terms:
-        terms.add(aT)
-  sorted_terms=sorted(list(terms))
-  terms_store = {"TERM"+str(i): sorted_terms[i] for i in range(len(sorted_terms))}
-  reverse_store = {string: "TERM"+str(index) for index, string in enumerate(sorted_terms)}
-  for aO in origClasses:
     canonical_terms=set()
     for aT in aO:
       canonical_terms.add(reverse_store[aT])
@@ -91,18 +84,18 @@ def build_canonical_partition(scope):
 def find_last_common_class(source, destination, scope):
   found=False
   for aT in timeline:
-    if aT['scope']==scope:
+    if aT['name']==scope:
       found=True
       break
   if not found:
-    print("scope not found")
+    print(f"series {scope} not found in source file")
     sys.exit(1)
     return None,None,None,None
   equality=None
   operation=None
   LHS=None
   RHS=None
-  timeseries=aT['timeseries']
+  timeseries=aT['history']
   for step in timeseries:
     found=False
     for ec in step['classes']:
@@ -118,7 +111,8 @@ def find_last_common_class(source, destination, scope):
   if found:
     return time,op,LHS,RHS
   else:
-    print("common class not found")
+    print(source,"and",destination,"are not equivalent")
+    print("(common class not found)")
     sys.exit(1)
     return None,None,None,None
 
@@ -236,15 +230,19 @@ find_circuit(source,destination,scope)
 if canonical:
   cp,hx=build_canonical_partition(scope)
   jo={}
-  jo['terms']={}
+#  jo['terms']={}
   jo['partition']={}
   jo['partition']['classes']=cp
   jo['partition']['address']=hx
-  for ts in terms_store:
-    jo['terms'][ts]=terms_store[ts]
+#  print(len(terms_store))
+#  for ts in terms_store:
+#    jo['terms'][ts]=terms_store[ts]
   with open(f"{hx}.json", 'w') as f:
     json.dump(jo,f, sort_keys=True,indent=2)
   print("")
+  print("Canonical partition:",hx)
+  print("  number of classes:",len(cp))
+  print("  number of terms:",len(terms_store))
 cnt=-1
 done=False
 if source in circuit:
