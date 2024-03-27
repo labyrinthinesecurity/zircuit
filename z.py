@@ -79,7 +79,29 @@ def build_canonical_partition(scope):
     canonical_class=sorted(list(canonical_terms))
     canonical_classes.append(canonical_class)
   canonical_partition=sorted(canonical_classes,key=sort_by_first_term)
-  return canonical_partition,contents_addressable(canonical_partition)
+  coeffs=[]
+  for cl in canonical_partition:
+    coeff=0
+    for term in cl:
+      integer=term.split('TERM')
+      coeff+=int(integer[1])
+    coeffs.append(coeff)
+  polynomial=''
+  exponent=-1
+  for coeff in coeffs:
+    exponent+=1
+    if exponent>1:
+      polynomial+=str(coeff)+'x^'+str(exponent)+'+'
+    elif exponent==0:
+      polynomial=str(coeff)+'+'
+    else:
+      polynomial+=str(coeff)+'x'+'+'
+  if exponent>=0:
+    polynomial=polynomial[:-1]
+  invariants={}
+  invariants['hash']=contents_addressable(canonical_partition)
+  invariants['polynomial']=polynomial
+  return canonical_partition,invariants
 
 def find_last_common_class(source, destination, scope):
   found=False
@@ -228,21 +250,31 @@ load_file(filename)
 
 find_circuit(source,destination,scope)
 if canonical:
-  cp,hx=build_canonical_partition(scope)
+  cp,invariants=build_canonical_partition(scope)
+  hx=invariants['hash']
+  poly=invariants['polynomial']
   jo={}
-#  jo['terms']={}
   jo['partition']={}
   jo['partition']['classes']=cp
   jo['partition']['address']=hx
-#  print(len(terms_store))
-#  for ts in terms_store:
-#    jo['terms'][ts]=terms_store[ts]
-  with open(f"{hx}.json", 'w') as f:
-    json.dump(jo,f, sort_keys=True,indent=2)
+  jo['partition']['polynomial']=poly
+  if not os.path.exists('store/'):
+    os.makedirs('store/')
+  if not os.path.exists('store/'+poly):
+    os.makedirs('store/'+poly)
+  fname=f"{hx}.json"
+  fname='store/'+poly+'/'+fname
   print("")
   print("Canonical partition:",hx)
+  print("  polynomial:",poly)
   print("  number of classes:",len(cp))
   print("  number of terms:",len(terms_store))
+  try:
+    with open(fname, 'w') as f:
+      json.dump(jo,f, sort_keys=True,indent=2)
+    print(f"  saved to {fname}")
+  except:
+    print(f"  ERROR. couldnt save to {fname}")
 cnt=-1
 done=False
 if source in circuit:
