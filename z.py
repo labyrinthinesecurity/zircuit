@@ -93,7 +93,7 @@ def run_pass(source, destination, scope, pss):
         circuit[RHS]=destination
         circuitTime[RHS]=time
         circuitOp[RHS]='M'
-      elif destinaion==RHS:
+      elif destination==RHS:
         circuit[LHS]=destination
         circuitTime[LHS]=time
         circuitOp[LHS]='M'
