@@ -1,26 +1,21 @@
 #!/usr/bin/python3
 
-import json,os,sys,hashlib,argparse
+import json,os,sys,argparse
 
 circuit={}
 circuitTime={}
 circuitOp={}
 timeline=None
 
-terms_store=None
-reverse_store=None
-
 parser = argparse.ArgumentParser()
 parser.add_argument("--filename", type=str, required=False, default='test', nargs='?', help="name of the JSON source file, in FEATHER format (defaut name: test.json)")
 parser.add_argument("--debug", type=bool, nargs='?', default=False, help="toggles debug mode (default: False")
-parser.add_argument("--canonical", nargs='?', default=False, type=bool, help="generates partition in canonical form (default: False)")
 parser.add_argument("--name", type=str, required=True, nargs='?', help="name of the series in the source file")
 parser.add_argument("--origin", type=str, required=True, nargs='?', help="origin of the equivalence to be proved")
 parser.add_argument("--endpoint", type=str, required=True, nargs='?', help="endpoint of the equivalence to be proved")
 args = parser.parse_args()
 
 debug=args.debug
-canonical=args.canonical
 filename=args.filename
 scope=args.name
 source=args.origin
@@ -34,74 +29,6 @@ def load_file(filename):
   except:
     print("cannot load input file.")
     sys.exit(1)
-
-def sort_by_first_term(l):
-  return l[0]
-
-def contents_addressable(json_obj):
-  json_string = json.dumps(json_obj, sort_keys=True)
-  return hashlib.sha256(json_string.encode()).hexdigest()
-
-def build_canonical_partition(scope):
-  global terms_store
-  global reverse_store
-  found=False
-  maxId=-1
-  origClasses=None
-  terms=set()
-  canonical_classes=[]
-  for aT in timeline:
-    if aT['name']==scope:
-      found=True
-      timeseries=aT['history']
-      break
-  if not found:
-    return None
-  found=False
-  for aS in timeseries:
-    if aS['id']>maxId:
-      maxId=aS['id']
-      origClasses=aS['classes']
-      found=True
-  if not found:
-    return None
-  for aO in origClasses:
-    for aT in aO:
-      if aT not in terms:
-        terms.add(aT)
-  sorted_terms=sorted(list(terms))
-  terms_store = {"TERM"+str(i): sorted_terms[i] for i in range(len(sorted_terms))}
-  reverse_store = {string: "TERM"+str(index) for index, string in enumerate(sorted_terms)}
-  for aO in origClasses:
-    canonical_terms=set()
-    for aT in aO:
-      canonical_terms.add(reverse_store[aT])
-    canonical_class=sorted(list(canonical_terms))
-    canonical_classes.append(canonical_class)
-  canonical_partition=sorted(canonical_classes,key=sort_by_first_term)
-  coeffs=[]
-  for cl in canonical_partition:
-    coeff=0
-    for term in cl:
-      integer=term.split('TERM')
-      coeff+=int(integer[1])
-    coeffs.append(coeff)
-  polynomial=''
-  exponent=-1
-  for coeff in coeffs:
-    exponent+=1
-    if exponent>1:
-      polynomial+=str(coeff)+'x^'+str(exponent)+'+'
-    elif exponent==0:
-      polynomial=str(coeff)+'+'
-    else:
-      polynomial+=str(coeff)+'x'+'+'
-  if exponent>=0:
-    polynomial=polynomial[:-1]
-  invariants={}
-  invariants['hash']=contents_addressable(canonical_partition)
-  invariants['polynomial']=polynomial
-  return canonical_partition,invariants
 
 def find_last_common_class(source, destination, scope):
   found=False
@@ -139,6 +66,13 @@ def find_last_common_class(source, destination, scope):
     return None,None,None,None
 
 def find_circuit(source, destination, scope):
+  global circuit
+  global circuitTime
+  global circuitOp
+  run_pass(source, destination, scope, 'G')
+  run_pass(source, destination, scope, 'M')
+
+def run_pass(source, destination, scope, pss):
   global circuit
   global circuitTime
   global circuitOp
@@ -194,10 +128,17 @@ def find_circuit(source, destination, scope):
         time3,op3,LHS3,RHS3=find_last_common_class(source,LHS,scope)
         if time3!=time:
           find_circuit(source,LHS,scope)
-    if (source!=LHS and source!=RHS and destination!=LHS and destination!=RHS):
-      circuit[LHS]=RHS
-      circuitTime[LHS]=time
-      circuitOp[LHS]='M'
+#    if (source!=LHS and source!=RHS and destination!=LHS and destination!=RHS):
+    else:
+      if pss=='M':
+        if LHS not in circuit and RHS in circuit:
+          circuit[LHS]=RHS
+          circuitTime[LHS]=time
+          circuitOp[LHS]='M'
+        if RHS not in circuit and LHS in circuit:
+          circuit[RHS]=LHS
+          circuitTime[RHS]=time
+          circuitOp[RHS]='M'
       time2,op2,LHS2,RHS2=find_last_common_class(RHS,destination,scope)
       if time2!=time:
         find_circuit(RHS,destination,scope)
@@ -248,33 +189,12 @@ load_file(filename)
 #destination='b'
 #scope='RG0'
 
+if source==destination:
+  print("ERROR: source and destination must not be identical")
+  sys.exit(1)
+
 find_circuit(source,destination,scope)
-if canonical:
-  cp,invariants=build_canonical_partition(scope)
-  hx=invariants['hash']
-  poly=invariants['polynomial']
-  jo={}
-  jo['partition']={}
-  jo['partition']['classes']=cp
-  jo['partition']['address']=hx
-  jo['partition']['polynomial']=poly
-  if not os.path.exists('store/'):
-    os.makedirs('store/')
-  if not os.path.exists('store/'+poly):
-    os.makedirs('store/'+poly)
-  fname=f"{hx}.json"
-  fname='store/'+poly+'/'+fname
-  print("")
-  print("Canonical partition:",hx)
-  print("  polynomial:",poly)
-  print("  number of classes:",len(cp))
-  print("  number of terms:",len(terms_store))
-  try:
-    with open(fname, 'w') as f:
-      json.dump(jo,f, sort_keys=True,indent=2)
-    print(f"  saved to {fname}")
-  except:
-    print(f"  ERROR. couldnt save to {fname}")
+
 cnt=-1
 done=False
 if source in circuit:
