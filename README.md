@@ -2,8 +2,20 @@
 
 <img src="https://github.com/labyrinthinesecurity/zircuit/blob/main/zircuit.png" width="50%">
 
+*zircuit* aims at easing the life of humans reviewing automated proofs made with Equality Theory. It was designed for reviewing clusters of Azure SPNs sharing the same RBAC role definitions, but it can be generalized for any kind of reviews, as long as the input file sticks to the JSON format explained below.
+
 ## Proof of Equivalence (PoE)
 
+Any two elements a and b are equivalent if and only if a chain of equalities can be found to link them together. This "circuit" is a proof that a and b belong to the same equivalence class, even when the relation is not obvious because the chain is long.
+
+## JSON input format: FEATHER
+
+The input format is very, very simple and straightfowrd: it's a timeline of atomic operations performed by the solver. The operations can be of 3 kinds:
+- create (C): puts an element in a new equivalence class if it cannot fit elsewhere
+- merge (M): merges two equivalence classes into one if they share a common element
+- grow (G): puts an element into an existing equivalence class if it can be equated to one of the elements of the class
+
+Take a look at test_samples/test1.json for a concrete example.
 
 ## Run test sample(s)
 
