@@ -15,6 +15,16 @@ The input format is very, very simple and straightfoward: it's a historical time
 - merge (M): merges two equivalence classes into one if they share a common element
 - grow (G): puts an element into an existing equivalence class if it can be equated to one of the elements of the class
 
+Here is an example of an operation: it is sequentially identified in the global timeline by id number 1. The operation is of type G (grow). "a", the left hand side (LHS) is equated to "g", the right hand side (RHS).
+```
+"id": 1,
+        "op": "G",
+        "equality": {
+          "LHS": "a",
+          "RHS": "g"
+        }
+```
+
 After each operation is performed, the fresh list of resulting equivalence classes is dumped: here is an example showing a single equivalence class featuring two class members called "a" and "b":
 ```
 "classes": [
