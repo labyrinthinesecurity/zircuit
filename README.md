@@ -25,7 +25,7 @@ Here is an example of an operation: it is sequentially identified in the global 
         }
 ```
 
-After each operation is performed, the fresh list of resulting equivalence classes is dumped: here is an example showing a single equivalence class featuring two class members called "a" and "b":
+After each operation is performed, the fresh list of resulting equivalence classes is dumped. Here is the outcome of operation id 1: after G is applied to equivalence classes "a" and "b", a single equivalence class featuring two class members called "a" and "b" is created. Put it another way: a and b are merged into a single class.
 ```
 "classes": [
           [
