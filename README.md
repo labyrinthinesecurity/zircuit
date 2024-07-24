@@ -10,10 +10,18 @@ Any two elements a and b are equivalent if and only if a chain of equalities can
 
 ## JSON input format: FEATHER
 
-The input format is very, very simple and straightfowrd: it's a timeline of atomic operations performed by the solver. The operations can be of 3 kinds:
+The input format is very, very simple and straightfoward: it's a historical timeline of atomic operations ("Ops") performed by the solver. Ops can be of 3 kinds:
 - create (C): puts an element in a new equivalence class if it cannot fit elsewhere
 - merge (M): merges two equivalence classes into one if they share a common element
 - grow (G): puts an element into an existing equivalence class if it can be equated to one of the elements of the class
+
+After each operation is performed, the fresh list of resulting equivalence classes is dumped: here is an example showing a single equivalence class featuring two class members called "a" and "b":
+```
+"classes": [
+          [
+            "a","g"
+          ]
+```
 
 Take a look at test_samples/test1.json for a concrete example.
 
